@@ -60,8 +60,7 @@ curl -f -X PUT http://localhost:9200/tmdb/_bulk -H"Content-type: application/jso
 
 see "[Apache configuration (xampp)](#apache_conf)" above
 
-
 ### Usage:
 
-After importing the tmdb database extract (see installation), start your apache webserver and load the url [http://localhost:9200/IR].
+(Re)start your apache webserver and load the url [http://localhost:9200/IR](http://localhost:9200/IR).
 
