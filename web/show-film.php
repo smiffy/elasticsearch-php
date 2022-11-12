@@ -30,8 +30,6 @@ $params = [
 ];
 
 $response = $client->get($params);
-# $response['_source'];
-# print "<pre>".print_r($response,1)."</pre>";
 $doc =  $response['_source'];
 
 ?>

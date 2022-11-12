@@ -59,13 +59,12 @@ $sort_variants = ["_score:desc" => "score (desc)",
     </form>
 
 <?php
-if ($query_string) {
+if (true or $query_string) {
     $client = ClientBuilder::create()
                  ->setHosts([$server])
                  ->setBasicAuthentication($user, $password)
 #                 ->setCABundle('c:/software/elasticsearch-8.4.3/config/certs/http_ca.crt')
                  ->build();
-
 
     $params = [
       "body" => [
