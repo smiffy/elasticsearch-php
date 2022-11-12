@@ -61,7 +61,7 @@ curl -f -X PUT http://localhost:9200/tmdb/_bulk -H"Content-type: application/jso
 
 ###  Apache configuration:
 
-see "[Apache configuration (xampp)](#apache_conf)" above
+see "[Apache configuration (xampp)](#apache_config)" above
 
 ### Usage:
 
