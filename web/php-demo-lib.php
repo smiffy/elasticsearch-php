@@ -38,7 +38,7 @@ $sort_variants = ["_score:desc" => "score (desc)",
   <body>
     <form>
       Use <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax"><em>Simple query string query</em></a>-syntax to formulate your query<p>
-      <input type="text" name="q" value="<?= $query_string_form ?>">
+      <input type="text" name="q" value="<?= $query_string_form ?>" size=30>
       <input type="submit" value="query">
       <select name="sort_order" onchange="this.form.submit()">
             <?php foreach ($sort_variants as $k => $v) { 

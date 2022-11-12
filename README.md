@@ -1,5 +1,6 @@
 # PHP/Elasticsearch Demo Application
 
+Screenshot Web-page:
 ![](screenshot-search.JPG)
 
 Sample web-application that shows the usage of the php/elasticsearch library. 
