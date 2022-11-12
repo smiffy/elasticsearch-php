@@ -1,8 +1,8 @@
 <html>
   <header>
-    <title>WPF "Information Retrieval": PHP/Elasticsearch Demo Application</title>
+    <title>WPF "Information Retrieval": Elasticsearch/PHP Demo Application</title>
   </header>
-<h1>WPF <em>Information Retrieval</em> - PHP/Elasticsearch Demo Application</h1>
+<h1>Elasticsearch/PHP Demo Application</h1>
 <?php
 
 
@@ -15,12 +15,16 @@ $query_string = array_key_exists("q", $_REQUEST)?$_REQUEST['q']:"";
 $query_string_form = preg_replace('/"/', '&quot;', $query_string);
 $start_from = array_key_exists("start", $_REQUEST)?$_REQUEST['start']:0;
 $sort_order = array_key_exists("sort_order", $_REQUEST)?$_REQUEST['sort_order']:"_score:desc";
+$mode = array_key_exists("mode", $_REQUEST)?$_REQUEST['mode']:"or";
 
 if (preg_match('/^(.*):(.*)$/', $sort_order, $m)) {
     $sort[$m[1]] = $m[2];
 } else {
     die("Error: ".print_r($sort_order,1));
 }
+
+$or_semantic = ($mode=="or")?"CHECKED":"";
+$and_semantic = ! $or_semantic?"CHECKED":"";
 
 $ini_array = parse_ini_file("php-demo.ini");
 $server = $ini_array['server'];
@@ -40,7 +44,7 @@ $sort_variants = ["_score:desc" => "score (desc)",
     <form>
       Use <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax"><em>Simple query string query</em></a>-syntax to formulate your query<p>
       <input type="text" name="q" value="<?= $query_string_form ?>" size=30>
-      <input type="submit" value="query">
+ Sort:
       <select name="sort_order" onchange="this.form.submit()">
             <?php foreach ($sort_variants as $k => $v) { 
                       $sel = $k==$sort_order?"SELECTED":""; 
@@ -48,6 +52,10 @@ $sort_variants = ["_score:desc" => "score (desc)",
                <option <?= $sel ?> value="<?= $k ?>"><?=$v ?></option>
             <?php } ?>
       </select>
+      <input type="radio" <?= $and_semantic ?> name="mode" value="and"> And-
+      <input type="radio" <?= $or_semantic ?> name="mode" value="or"> Or-Semantic
+      <p>
+      <input type="submit" value="query">
     </form>
 
 <?php
@@ -65,7 +73,7 @@ if ($query_string) {
            "simple_query_string" => [
                 "fields" => ["title", "overview","actors","director"],
                 "query" => $query_string,
-                "default_operator" => "and"
+                "default_operator" => $mode
             ]
         ],
         "sort" => [$sort],

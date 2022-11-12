@@ -18,7 +18,7 @@ $password = $ini_array['password'];
 
 $client = ClientBuilder::create()
     ->setHosts([$server])
-    ->setBasicAuthentication('elastic', $password)
+    ->setBasicAuthentication($user, $password)
 #    ->setCABundle('c:/software/elasticsearch-8.4.3/config/certs/http_ca.crt')
     ->build();
 

@@ -1,10 +1,9 @@
-VERSION=8.5.0
+VERSION=8.4.3
 ES_HOME=c:/software/elasticsearch-$(VERSION)
 KIB_HOME=c:/software/kibana-$(VERSION)
 
-
 SERVER=http://localhost:9200
-USER=
+USER=--user xxx:yyy
 
 install:
 	unzip elasticsearch-$(VERSION)-windows-x86_64.zip
