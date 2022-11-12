@@ -2,8 +2,6 @@ VERSION=8.5.0
 ES_HOME=c:/software/elasticsearch-$(VERSION)
 KIB_HOME=c:/software/kibana-$(VERSION)
 
-# USER=--user elastic:aTclbaS9aK5mfgRtzfQpalDD
-# SERVER=https://wpf-ir.es.us-central1.gcp.cloud.es.io
 
 SERVER=http://localhost:9200
 USER=
