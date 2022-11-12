@@ -6,8 +6,6 @@ KIB_HOME=c:/software/kibana-$(VERSION)
 SERVER=http://localhost:9200
 USER=
 
-
-
 install:
 	unzip elasticsearch-$(VERSION)-windows-x86_64.zip
 	unzip kibana-$(VERSION)-windows-x86_64.zip
@@ -27,3 +25,4 @@ bulk_load: tmdb-bulk.json
 
 clean:
 	rm -f *.bak *~ web/*~ web/*.bak
+
