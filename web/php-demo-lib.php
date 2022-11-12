@@ -5,6 +5,7 @@
 <h1>WPF <em>Information Retrieval</em> - PHP/Elasticsearch Demo Application</h1>
 <?php
 
+
 include 'Utils.php';
 
 require_once "./vendor/autoload.php";
