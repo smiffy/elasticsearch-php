@@ -43,8 +43,7 @@ After that, you have to restart the apache web-server.
 
 ### Configuration Elasticsearch
 
-- Disable user authentication
-file ````./config/elasticsearch.yml````
+- Disable user authentication (file: ````./config/elasticsearch.yml````)
 ````
 ...
 # Enable security features
