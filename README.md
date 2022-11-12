@@ -4,6 +4,8 @@ Sample web-application that shows the usage of the php/elasticsearch library.
 
 The application uses the [Simple query string syntax](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax) to query the database.
 
+![](screenshot-search.JPG)
+
 The application also demonstrates the [highlight](https://www.elastic.co/guide/en/elasticsearch/reference/current/highlighting.html) and the [explain](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html) functionality (by klicking the score value).
 
 ## Demo (without installing Elasticsearch, without data import)
