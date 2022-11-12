@@ -1,5 +1,0 @@
-DirectoryIndex php-demo-lib.php
-
-<files "php-demo.ini">
-    deny from all
-</files>
