@@ -13,13 +13,14 @@ $ini_array = parse_ini_file("php-demo.ini");
 $server = $ini_array['server'];
 $es_index = $ini_array['index'];
 $user = $ini_array['user'];
-$password = $ini_array['password'];
+$password = $ini_array['password']??getenv('ES_PW');
+$cert =  $ini_array['cert'];
 
 
 $client = ClientBuilder::create()
     ->setHosts([$server])
     ->setBasicAuthentication($user, $password)
-#    ->setCABundle('c:/software/elasticsearch-8.4.3/config/certs/http_ca.crt')
+    ->setCABundle($cert)
     ->build();
 
 // Info API

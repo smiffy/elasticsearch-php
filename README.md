@@ -22,9 +22,12 @@ The application also demonstrates the [highlight](https://www.elastic.co/guide/e
 ````
 Alias /IR c:/users/demo/documents/elasticsearch-php/web
 <Directory "c:/users/demo/documents/elasticsearch-php/web">
+
+    Options Indexes FollowSymLinks Includes ExecCGI
+    DirectoryIndex php-demo-lib.php
     AllowOverride All
-    Options None
     Require all granted
+    setenv ES_PW <password-for-elastic-search-user>
 </Directory>
 ````
 

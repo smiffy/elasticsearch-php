@@ -2,7 +2,7 @@
   <header>
     <title>WPF "Information Retrieval": Elasticsearch/PHP Demo Application</title>
   </header>
-<h1>Elasticsearch/PHP Demo Application</h1>
+<h1>Elasticsearch/PHP Demo Application (X)</h1>
 <?php
 
 
@@ -28,10 +28,11 @@ $and_semantic = ! $or_semantic?"CHECKED":"";
 
 $ini_array = parse_ini_file("php-demo.ini");
 $server = $ini_array['server'];
+$cert =  $ini_array['cert'];
 $results_per_page = $ini_array['results_per_page'];
 $es_index = $ini_array['index'];
 $user = $ini_array['user'];
-$password = $ini_array['password'];
+$password = $ini_array['password']??getenv('ES_PW');
 
 $sort_variants = ["_score:desc" => "score (desc)",
                   "_score:asc" => "score (asc)",                
@@ -63,14 +64,14 @@ if (true or $query_string) {
     $client = ClientBuilder::create()
                  ->setHosts([$server])
                  ->setBasicAuthentication($user, $password)
-#                 ->setCABundle('c:/software/elasticsearch-8.4.3/config/certs/http_ca.crt')
+                 ->setCABundle($cert)
                  ->build();
 
     $params = [
       "body" => [
         "query" => [
            "simple_query_string" => [
-                "fields" => ["title", "overview","actors","director"],
+                "fields" => ["title" ], # , "overview","actors","director"],
                 "query" => $query_string,
                 "default_operator" => $mode
             ]
@@ -86,6 +87,29 @@ if (true or $query_string) {
 		   	       "fragment_size" => 60],
 	      "director"=>    ["number_of_fragments" => 2,
 		               "fragment_size" => 60]
+          ]
+        ]
+
+        ],
+        'from' => $start_from,
+        'explain' => true,
+        'size' => $results_per_page,
+    ];
+
+    $params = [
+      "body" => [
+        "query" => [
+           "simple_query_string" => [
+                "fields" => ["title" ], # , "overview","actors","director"],
+                "query" => $query_string,
+                "default_operator" => "or"
+            ]
+        ],
+        "sort" => [$sort],
+        "highlight" => [
+          "fields" => [
+              "title" =>      ["number_of_fragments" => 3,
+		   	       "fragment_size" => 120 ],
           ]
         ]
 
