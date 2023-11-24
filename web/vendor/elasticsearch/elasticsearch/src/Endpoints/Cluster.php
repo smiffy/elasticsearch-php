@@ -181,6 +181,7 @@ class Cluster extends AbstractEndpoint
 	 *     name: list, //  The comma separated names of the component templates
 	 *     master_timeout: time, // Explicit operation timeout for connection to master node
 	 *     local: boolean, // Return local information, do not retrieve the state from master node (default: false)
+	 *     include_defaults: boolean, // Return all default configurations for the component template (default: false)
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -203,7 +204,7 @@ class Cluster extends AbstractEndpoint
 			$url = '/_component_template';
 			$method = 'GET';
 		}
-		$url = $this->addQueryString($url, $params, ['master_timeout','local','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['master_timeout','local','include_defaults','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -288,6 +289,41 @@ class Cluster extends AbstractEndpoint
 			$method = 'GET';
 		}
 		$url = $this->addQueryString($url, $params, ['expand_wildcards','level','local','master_timeout','timeout','wait_for_active_shards','wait_for_nodes','wait_for_events','wait_for_no_relocating_shards','wait_for_no_initializing_shards','wait_for_status','pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
+	 * Returns different information about the cluster.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/cluster-info.html
+	 *
+	 * @param array{
+	 *     target: list, // (REQUIRED) Limit the information returned to the specified target.
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function info(array $params = [])
+	{
+		$this->checkRequiredParameters(['target'], $params);
+		$url = '/_info/' . $this->encode($params['target']);
+		$method = 'GET';
+
+		$url = $this->addQueryString($url, $params, ['pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];

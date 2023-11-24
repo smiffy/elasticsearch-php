@@ -425,6 +425,45 @@ class Indices extends AbstractEndpoint
 
 
 	/**
+	 * Deletes the data stream lifecycle of the selected data streams.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/data-streams-delete-lifecycle.html
+	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
+	 *
+	 * @param array{
+	 *     name: list, // (REQUIRED) A comma-separated list of data streams of which the data stream lifecycle will be deleted; use `*` to get all data streams
+	 *     expand_wildcards: enum, // Whether wildcard expressions should get expanded to open or closed indices (default: open)
+	 *     timeout: time, // Explicit timestamp for the document
+	 *     master_timeout: time, // Specify timeout for connection to master
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function deleteDataLifecycle(array $params = [])
+	{
+		$this->checkRequiredParameters(['name'], $params);
+		$url = '/_data_stream/' . $this->encode($params['name']) . '/_lifecycle';
+		$method = 'DELETE';
+
+		$url = $this->addQueryString($url, $params, ['expand_wildcards','timeout','master_timeout','pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
 	 * Deletes a data stream.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/data-streams.html
@@ -463,7 +502,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Deletes an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-delete-template.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the template
@@ -500,7 +539,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Deletes an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-delete-template-v1.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the template
@@ -570,6 +609,45 @@ class Indices extends AbstractEndpoint
 		$url = $this->addQueryString($url, $params, ['run_expensive_tasks','flush','ignore_unavailable','allow_no_indices','expand_wildcards','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
+	 * Downsample an index
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-rollup.html
+	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
+	 *
+	 * @param array{
+	 *     index: string, // (REQUIRED) The index to downsample
+	 *     target_index: string, // (REQUIRED) The name of the target index to store downsampled data
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 *     body: array, // (REQUIRED) The downsampling configuration
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function downsample(array $params = [])
+	{
+		$this->checkRequiredParameters(['index','target_index','body'], $params);
+		$url = '/' . $this->encode($params['index']) . '/_downsample/' . $this->encode($params['target_index']);
+		$method = 'POST';
+
+		$url = $this->addQueryString($url, $params, ['pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json',
 		];
 		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
 	}
@@ -663,7 +741,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Returns information about whether a particular index template exists.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/index-templates.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the template
@@ -701,7 +779,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Returns information about whether a particular index template exists.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-template-exists-v1.html
 	 *
 	 * @param array{
 	 *     name: list, // (REQUIRED) The comma separated names of the index templates
@@ -729,6 +807,44 @@ class Indices extends AbstractEndpoint
 		$method = 'HEAD';
 
 		$url = $this->addQueryString($url, $params, ['flat_settings','master_timeout','local','pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
+	 * Retrieves information about the index's current data stream lifecycle, such as any potential encountered error, time since creation etc.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/data-streams-explain-lifecycle.html
+	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
+	 *
+	 * @param array{
+	 *     index: string, // (REQUIRED) The name of the index to explain
+	 *     include_defaults: boolean, // indicates if the API should return the default values the system uses for the index's lifecycle
+	 *     master_timeout: time, // Specify timeout for connection to master
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function explainDataLifecycle(array $params = [])
+	{
+		$this->checkRequiredParameters(['index'], $params);
+		$url = '/' . $this->encode($params['index']) . '/_lifecycle/explain';
+		$method = 'GET';
+
+		$url = $this->addQueryString($url, $params, ['include_defaults','master_timeout','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -954,6 +1070,44 @@ class Indices extends AbstractEndpoint
 
 
 	/**
+	 * Returns the data stream lifecycle of the selected data streams.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/data-streams-get-lifecycle.html
+	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
+	 *
+	 * @param array{
+	 *     name: list, // (REQUIRED) A comma-separated list of data streams to get; use `*` to get all data streams
+	 *     expand_wildcards: enum, // Whether wildcard expressions should get expanded to open or closed indices (default: open)
+	 *     include_defaults: boolean, // Return all relevant default configurations for the data stream (default: false)
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function getDataLifecycle(array $params = [])
+	{
+		$this->checkRequiredParameters(['name'], $params);
+		$url = '/_data_stream/' . $this->encode($params['name']) . '/_lifecycle';
+		$method = 'GET';
+
+		$url = $this->addQueryString($url, $params, ['expand_wildcards','include_defaults','pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
 	 * Returns data streams.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/data-streams.html
@@ -961,6 +1115,7 @@ class Indices extends AbstractEndpoint
 	 * @param array{
 	 *     name: list, //  A comma-separated list of data streams to get; use `*` to get all data streams
 	 *     expand_wildcards: enum, // Whether wildcard expressions should get expanded to open or closed indices (default: open)
+	 *     include_defaults: boolean, // Return all relevant default configurations for the data stream (default: false)
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -983,7 +1138,7 @@ class Indices extends AbstractEndpoint
 			$url = '/_data_stream';
 			$method = 'GET';
 		}
-		$url = $this->addQueryString($url, $params, ['expand_wildcards','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['expand_wildcards','include_defaults','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -1039,13 +1194,14 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Returns an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-get-template.html
 	 *
 	 * @param array{
 	 *     name: string, //  A pattern that returned template names must match
 	 *     flat_settings: boolean, // Return settings in flat format (default: false)
 	 *     master_timeout: time, // Explicit operation timeout for connection to master node
 	 *     local: boolean, // Return local information, do not retrieve the state from master node (default: false)
+	 *     include_defaults: boolean, // Return all relevant default configurations for the index template (default: false)
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -1068,7 +1224,7 @@ class Indices extends AbstractEndpoint
 			$url = '/_index_template';
 			$method = 'GET';
 		}
-		$url = $this->addQueryString($url, $params, ['flat_settings','master_timeout','local','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['flat_settings','master_timeout','local','include_defaults','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -1172,7 +1328,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Returns an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-get-template-v1.html
 	 *
 	 * @param array{
 	 *     name: list, //  The comma separated names of the index templates
@@ -1396,9 +1552,49 @@ class Indices extends AbstractEndpoint
 
 
 	/**
+	 * Updates the data stream lifecycle of the selected data streams.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/data-streams-put-lifecycle.html
+	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
+	 *
+	 * @param array{
+	 *     name: list, // (REQUIRED) A comma-separated list of data streams whose lifecycle will be updated; use `*` to set the lifecycle to all data streams
+	 *     expand_wildcards: enum, // Whether wildcard expressions should get expanded to open or closed indices (default: open)
+	 *     timeout: time, // Explicit timestamp for the document
+	 *     master_timeout: time, // Specify timeout for connection to master
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 *     body: array, //  The data stream lifecycle configuration that consist of the data retention
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function putDataLifecycle(array $params = [])
+	{
+		$this->checkRequiredParameters(['name'], $params);
+		$url = '/_data_stream/' . $this->encode($params['name']) . '/_lifecycle';
+		$method = 'PUT';
+
+		$url = $this->addQueryString($url, $params, ['expand_wildcards','timeout','master_timeout','pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
 	 * Creates or updates an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-put-template.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the template
@@ -1528,7 +1724,7 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Creates or updates an index template.
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates-v1.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the template
@@ -1654,6 +1850,7 @@ class Indices extends AbstractEndpoint
 	 *     ignore_unavailable: boolean, // Whether specified concrete indices should be ignored when unavailable (missing or closed)
 	 *     allow_no_indices: boolean, // Whether to ignore if a wildcard indices expression resolves into no concrete indices. (This includes `_all` string or when no indices have been specified)
 	 *     expand_wildcards: enum, // Whether to expand wildcard expression to concrete indices that are open, closed or both.
+	 *     resource: string, // changed resource to reload analyzers from if applicable
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -1674,7 +1871,7 @@ class Indices extends AbstractEndpoint
 		$url = '/' . $this->encode($params['index']) . '/_reload_search_analyzers';
 		$method = empty($params['body']) ? 'GET' : 'POST';
 
-		$url = $this->addQueryString($url, $params, ['ignore_unavailable','allow_no_indices','expand_wildcards','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['ignore_unavailable','allow_no_indices','expand_wildcards','resource','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -1891,13 +2088,14 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Simulate matching the given index name against the index templates in the system
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-simulate-index.html
 	 *
 	 * @param array{
 	 *     name: string, // (REQUIRED) The name of the index (it must be a concrete index name)
 	 *     create: boolean, // Whether the index template we optionally defined in the body should only be dry-run added if new or can also replace an existing one
 	 *     cause: string, // User defined reason for dry-run creating the new template for simulation purposes
 	 *     master_timeout: time, // Specify timeout for connection to master
+	 *     include_defaults: boolean, // Return all relevant default configurations for this index template simulation (default: false)
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -1919,7 +2117,7 @@ class Indices extends AbstractEndpoint
 		$url = '/_index_template/_simulate_index/' . $this->encode($params['name']);
 		$method = 'POST';
 
-		$url = $this->addQueryString($url, $params, ['create','cause','master_timeout','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['create','cause','master_timeout','include_defaults','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 			'Content-Type' => 'application/json',
@@ -1931,13 +2129,14 @@ class Indices extends AbstractEndpoint
 	/**
 	 * Simulate resolving the given template name or body
 	 *
-	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-simulate-template.html
 	 *
 	 * @param array{
 	 *     name: string, //  The name of the index template
 	 *     create: boolean, // Whether the index template we optionally defined in the body should only be dry-run added if new or can also replace an existing one
 	 *     cause: string, // User defined reason for dry-run creating the new template for simulation purposes
 	 *     master_timeout: time, // Specify timeout for connection to master
+	 *     include_defaults: boolean, // Return all relevant default configurations for this template simulation (default: false)
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -1961,7 +2160,7 @@ class Indices extends AbstractEndpoint
 			$url = '/_index_template/_simulate';
 			$method = 'POST';
 		}
-		$url = $this->addQueryString($url, $params, ['create','cause','master_timeout','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['create','cause','master_timeout','include_defaults','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 			'Content-Type' => 'application/json',

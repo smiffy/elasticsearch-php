@@ -29,6 +29,42 @@ use Http\Promise\Promise;
 class Ml extends AbstractEndpoint
 {
 	/**
+	 * Clear the cached results from a trained model deployment
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/clear-trained-model-deployment-cache.html
+	 *
+	 * @param array{
+	 *     model_id: string, // (REQUIRED) The unique identifier of the trained model.
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function clearTrainedModelDeploymentCache(array $params = [])
+	{
+		$this->checkRequiredParameters(['model_id'], $params);
+		$url = '/_ml/trained_models/' . $this->encode($params['model_id']) . '/deployment/cache/_clear';
+		$method = 'POST';
+
+		$url = $this->addQueryString($url, $params, ['pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
 	 * Closes one or more anomaly detection jobs. A job can be opened and closed multiple times throughout its lifecycle.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-close-job.html
@@ -375,6 +411,7 @@ class Ml extends AbstractEndpoint
 	 *     job_id: string, // (REQUIRED) The ID of the job to delete
 	 *     force: boolean, // True if the job should be forcefully deleted
 	 *     wait_for_completion: boolean, // Should this request wait until the operation has completed before returning
+	 *     delete_user_annotations: boolean, // Should annotations added by the user be deleted
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -395,7 +432,7 @@ class Ml extends AbstractEndpoint
 		$url = '/_ml/anomaly_detectors/' . $this->encode($params['job_id']);
 		$method = 'DELETE';
 
-		$url = $this->addQueryString($url, $params, ['force','wait_for_completion','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['force','wait_for_completion','delete_user_annotations','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -1503,7 +1540,6 @@ class Ml extends AbstractEndpoint
 	 * Evaluate a trained model.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/infer-trained-model.html
-	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
 	 *
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The unique identifier of the trained model.
@@ -2000,6 +2036,7 @@ class Ml extends AbstractEndpoint
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The ID of the trained models to store
 	 *     defer_definition_decompression: boolean, // If set to `true` and a `compressed_definition` is provided, the request defers definition decompression and skips relevant validations.
+	 *     wait_for_completion: boolean, // Whether to wait for all child operations(e.g. model download) to complete, before returning or not. Default to false
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -2021,7 +2058,7 @@ class Ml extends AbstractEndpoint
 		$url = '/_ml/trained_models/' . $this->encode($params['model_id']);
 		$method = 'PUT';
 
-		$url = $this->addQueryString($url, $params, ['defer_definition_decompression','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['defer_definition_decompression','wait_for_completion','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 			'Content-Type' => 'application/json',
@@ -2072,7 +2109,6 @@ class Ml extends AbstractEndpoint
 	 * Creates part of a trained model definition
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/put-trained-model-definition-part.html
-	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
 	 *
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The ID of the trained model for this definition part
@@ -2111,7 +2147,6 @@ class Ml extends AbstractEndpoint
 	 * Creates a trained model vocabulary
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/put-trained-model-vocabulary.html
-	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
 	 *
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The ID of the trained model for this vocabulary
@@ -2153,6 +2188,7 @@ class Ml extends AbstractEndpoint
 	 * @param array{
 	 *     job_id: string, // (REQUIRED) The ID of the job to reset
 	 *     wait_for_completion: boolean, // Should this request wait until the operation has completed before returning
+	 *     delete_user_annotations: boolean, // Should annotations added by the user be deleted
 	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
 	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
 	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
@@ -2173,7 +2209,7 @@ class Ml extends AbstractEndpoint
 		$url = '/_ml/anomaly_detectors/' . $this->encode($params['job_id']) . '/_reset';
 		$method = 'POST';
 
-		$url = $this->addQueryString($url, $params, ['wait_for_completion','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['wait_for_completion','delete_user_annotations','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 		];
@@ -2336,13 +2372,14 @@ class Ml extends AbstractEndpoint
 	 * Start a trained model deployment.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/start-trained-model-deployment.html
-	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
 	 *
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The unique identifier of the trained model.
 	 *     cache_size: string, // A byte-size value for configuring the inference cache size. For example, 20mb.
-	 *     number_of_allocations: int, // The number of model allocations on each node where the model is deployed.
+	 *     deployment_id: string, // The Id of the new deployment. Defaults to the model_id if not set.
+	 *     number_of_allocations: int, // The total number of allocations this model is assigned across machine learning nodes.
 	 *     threads_per_allocation: int, // The number of threads used by each model allocation during inference.
+	 *     priority: string, // The deployment priority.
 	 *     queue_capacity: int, // Controls how many inference requests are allowed in the queue at a time.
 	 *     timeout: time, // Controls the amount of time to wait for the model to deploy.
 	 *     wait_for: string, // The allocation status for which to wait
@@ -2366,7 +2403,7 @@ class Ml extends AbstractEndpoint
 		$url = '/_ml/trained_models/' . $this->encode($params['model_id']) . '/deployment/_start';
 		$method = 'POST';
 
-		$url = $this->addQueryString($url, $params, ['cache_size','number_of_allocations','threads_per_allocation','queue_capacity','timeout','wait_for','pretty','human','error_trace','source','filter_path']);
+		$url = $this->addQueryString($url, $params, ['cache_size','deployment_id','number_of_allocations','threads_per_allocation','priority','queue_capacity','timeout','wait_for','pretty','human','error_trace','source','filter_path']);
 		$headers = [
 			'Accept' => 'application/json',
 			'Content-Type' => 'application/json',
@@ -2460,7 +2497,6 @@ class Ml extends AbstractEndpoint
 	 * Stop a trained model deployment.
 	 *
 	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/master/stop-trained-model-deployment.html
-	 * @internal This API is EXPERIMENTAL and may be changed or removed completely in a future release
 	 *
 	 * @param array{
 	 *     model_id: string, // (REQUIRED) The unique identifier of the trained model.
@@ -2675,6 +2711,43 @@ class Ml extends AbstractEndpoint
 	{
 		$this->checkRequiredParameters(['job_id','snapshot_id','body'], $params);
 		$url = '/_ml/anomaly_detectors/' . $this->encode($params['job_id']) . '/model_snapshots/' . $this->encode($params['snapshot_id']) . '/_update';
+		$method = 'POST';
+
+		$url = $this->addQueryString($url, $params, ['pretty','human','error_trace','source','filter_path']);
+		$headers = [
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json',
+		];
+		return $this->client->sendRequest($this->createRequest($method, $url, $headers, $params['body'] ?? null));
+	}
+
+
+	/**
+	 * Updates certain properties of trained model deployment.
+	 *
+	 * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/update-trained-model-deployment.html
+	 *
+	 * @param array{
+	 *     model_id: string, // (REQUIRED) The unique identifier of the trained model.
+	 *     pretty: boolean, // Pretty format the returned JSON response. (DEFAULT: false)
+	 *     human: boolean, // Return human readable values for statistics. (DEFAULT: true)
+	 *     error_trace: boolean, // Include the stack trace of returned errors. (DEFAULT: false)
+	 *     source: string, // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+	 *     filter_path: list, // A comma-separated list of filters used to reduce the response.
+	 *     body: array, // (REQUIRED) The updated trained model deployment settings
+	 * } $params
+	 *
+	 * @throws MissingParameterException if a required parameter is missing
+	 * @throws NoNodeAvailableException if all the hosts are offline
+	 * @throws ClientResponseException if the status code of response is 4xx
+	 * @throws ServerResponseException if the status code of response is 5xx
+	 *
+	 * @return Elasticsearch|Promise
+	 */
+	public function updateTrainedModelDeployment(array $params = [])
+	{
+		$this->checkRequiredParameters(['model_id','body'], $params);
+		$url = '/_ml/trained_models/' . $this->encode($params['model_id']) . '/deployment/_update';
 		$method = 'POST';
 
 		$url = $this->addQueryString($url, $params, ['pretty','human','error_trace','source','filter_path']);

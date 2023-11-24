@@ -24,11 +24,13 @@ use Elastic\Elasticsearch\Endpoints\Cluster;
 use Elastic\Elasticsearch\Endpoints\DanglingIndices;
 use Elastic\Elasticsearch\Endpoints\Enrich;
 use Elastic\Elasticsearch\Endpoints\Eql;
+use Elastic\Elasticsearch\Endpoints\Esql;
 use Elastic\Elasticsearch\Endpoints\Features;
 use Elastic\Elasticsearch\Endpoints\Fleet;
 use Elastic\Elasticsearch\Endpoints\Graph;
 use Elastic\Elasticsearch\Endpoints\Ilm;
 use Elastic\Elasticsearch\Endpoints\Indices;
+use Elastic\Elasticsearch\Endpoints\Inference;
 use Elastic\Elasticsearch\Endpoints\Ingest;
 use Elastic\Elasticsearch\Endpoints\License;
 use Elastic\Elasticsearch\Endpoints\Logstash;
@@ -36,7 +38,9 @@ use Elastic\Elasticsearch\Endpoints\Migration;
 use Elastic\Elasticsearch\Endpoints\Ml;
 use Elastic\Elasticsearch\Endpoints\Monitoring;
 use Elastic\Elasticsearch\Endpoints\Nodes;
+use Elastic\Elasticsearch\Endpoints\QueryRuleset;
 use Elastic\Elasticsearch\Endpoints\Rollup;
+use Elastic\Elasticsearch\Endpoints\SearchApplication;
 use Elastic\Elasticsearch\Endpoints\SearchableSnapshots;
 use Elastic\Elasticsearch\Endpoints\Security;
 use Elastic\Elasticsearch\Endpoints\Shutdown;
@@ -44,6 +48,7 @@ use Elastic\Elasticsearch\Endpoints\Slm;
 use Elastic\Elasticsearch\Endpoints\Snapshot;
 use Elastic\Elasticsearch\Endpoints\Sql;
 use Elastic\Elasticsearch\Endpoints\Ssl;
+use Elastic\Elasticsearch\Endpoints\Synonyms;
 use Elastic\Elasticsearch\Endpoints\Tasks;
 use Elastic\Elasticsearch\Endpoints\TextStructure;
 use Elastic\Elasticsearch\Endpoints\Transform;
@@ -131,6 +136,15 @@ trait NamespaceTrait
 	}
 
 
+	public function esql(): Esql
+	{
+		if (!isset($this->namespace['Esql'])) {
+			$this->namespace['Esql'] = new Esql($this);
+		}
+		return $this->namespace['Esql'];
+	}
+
+
 	public function features(): Features
 	{
 		if (!isset($this->namespace['Features'])) {
@@ -173,6 +187,15 @@ trait NamespaceTrait
 			$this->namespace['Indices'] = new Indices($this);
 		}
 		return $this->namespace['Indices'];
+	}
+
+
+	public function inference(): Inference
+	{
+		if (!isset($this->namespace['Inference'])) {
+			$this->namespace['Inference'] = new Inference($this);
+		}
+		return $this->namespace['Inference'];
 	}
 
 
@@ -239,12 +262,30 @@ trait NamespaceTrait
 	}
 
 
+	public function queryRuleset(): QueryRuleset
+	{
+		if (!isset($this->namespace['QueryRuleset'])) {
+			$this->namespace['QueryRuleset'] = new QueryRuleset($this);
+		}
+		return $this->namespace['QueryRuleset'];
+	}
+
+
 	public function rollup(): Rollup
 	{
 		if (!isset($this->namespace['Rollup'])) {
 			$this->namespace['Rollup'] = new Rollup($this);
 		}
 		return $this->namespace['Rollup'];
+	}
+
+
+	public function searchApplication(): SearchApplication
+	{
+		if (!isset($this->namespace['SearchApplication'])) {
+			$this->namespace['SearchApplication'] = new SearchApplication($this);
+		}
+		return $this->namespace['SearchApplication'];
 	}
 
 
@@ -308,6 +349,15 @@ trait NamespaceTrait
 			$this->namespace['Ssl'] = new Ssl($this);
 		}
 		return $this->namespace['Ssl'];
+	}
+
+
+	public function synonyms(): Synonyms
+	{
+		if (!isset($this->namespace['Synonyms'])) {
+			$this->namespace['Synonyms'] = new Synonyms($this);
+		}
+		return $this->namespace['Synonyms'];
 	}
 
 

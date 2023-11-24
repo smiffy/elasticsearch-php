@@ -1,5 +1,29 @@
 # Changelog
 
+## 8.8.0 (2023-11-08)
+
+- Support path in host connection URI
+  [#21](https://github.com/elastic/elastic-transport-php/pull/21)
+
+- Support userInfo in host connection URI
+  [#22](https://github.com/elastic/elastic-transport-php/pull/22)
+
+## 8.7.0 (2023-05-23)
+
+- Allow installation of psr/http-message v2.0
+  [#17](https://github.com/elastic/elastic-transport-php/pull/17)
+
+## 8.6.0 (2023-01-12)
+
+- Add full request and response to the log message context for better integration using [Clockwork](https://underground.works/clockwork/)
+  [#13](https://github.com/elastic/elastic-transport-php/pull/13)
+
+## 8.5.0 (2022-10-14)
+
+- Release created to be compatible with 8.5 Elastic clients
+- Fixed the full body message in debug() log for Transport
+  [#11](https://github.com/elastic/elastic-transport-php/pull/11) 
+
 ## 8.4.0 (2022-08-17)
 
 - Release created to be compatible with 8.4 Elastic clients
