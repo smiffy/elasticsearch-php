@@ -35,7 +35,7 @@ This create an alias (here IR), which links to the subdirectory ````web````
 (here: ````c:/users/demo/documents/elasticsearch-php/web````). 
 After that, you have to restart the apache web-server.
 
-- try [http://localhost/IR](http://localhost/IR) ...
+- try [https://localhost/IR](https://localhost/IR) ...
 
  
 ## With local Elasticsearch server (requires installation of Elasticsearch, data import)
@@ -44,21 +44,13 @@ After that, you have to restart the apache web-server.
 
 - Install [Elasticsearch](https://www.elastic.co/de/downloads/elasticsearch) 
 
-### Configuration Elasticsearch
 
-- Disable user authentication (file: ````./config/elasticsearch.yml````)
-````
-...
-# Enable security features
-xpack.security.enabled: false
-...
-````
 ### Import data into Elasticsearch
 - Create Elasticsearch index & import example data
 ````
-curl.exe -XDELETE http://localhost:9200/tmdb
-curl -f  -H 'Content-Type: application/json' -XPUT http://localhost:9200/tmdb -d '  { "settings": { "number_of_shards" : "1", "number_of_replicas" : "0" } }'
-curl -f -X PUT http://localhost:9200/tmdb/_bulk -H"Content-type: application/json" --data-binary @tmdb-bulk.json
+curl.exe -XDELETE --cacert http_ca.crt -u elastic:$ELASTIC_PASSWORD  https://localhost:9200/tmdb
+curl -f  -H 'Content-Type: application/json' -XPUT --cacert http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/tmdb -d '  { "settings": { "number_of_shards" : "1", "number_of_replicas" : "0" } }'
+curl -f -X PUT --cacert http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/tmdb/_bulk -H"Content-type: application/json" --data-binary @tmdb-bulk.json
 ````
 
 ###  Apache configuration:
@@ -67,5 +59,5 @@ see "[Apache configuration (xampp)](#apache_config)" above
 
 ### Usage:
 
-(Re)start your apache webserver and load the url [http://localhost:9200/IR](http://localhost:9200/IR).
+(Re)start your apache webserver and load the url [https://localhost:9200/IR](https://localhost:9200/IR).
 
