@@ -1,7 +1,6 @@
 {
     "require": {
-        "elasticsearch/elasticsearch": "^8.4",
-		"guzzlehttp/psr7": "2.4.5"
+        "elasticsearch/elasticsearch": "^8.11"
     },
     "config": {
         "allow-plugins": {
