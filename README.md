@@ -60,5 +60,5 @@ see "[Apache configuration (xampp)](#apache_config)" above
 
 ### Usage:
 
-(Re)start your apache webserver and load the url [http://localhost:9200/IR](http://localhost:9200/IR).
+(Re)start your apache webserver and load the url [http://localhost/IR](http://localhost/IR).
 
