@@ -2,7 +2,7 @@
   <header>
     <title>WPF "Information Retrieval": Elasticsearch/PHP Demo Application</title>
   </header>
-<h1>Elasticsearch/PHP Demo Application (X)</h1>
+<h1>Simple Elasticsearch/PHP Demo Application</h1>
 <?php
 
 
@@ -11,11 +11,15 @@ include 'Utils.php';
 require_once "./vendor/autoload.php";
 use Elastic\Elasticsearch\ClientBuilder;
 
-$query_string = array_key_exists("q", $_REQUEST)?$_REQUEST['q']:"";
+$query_string = $_REQUEST['q']??"";
+$start_from =   $_REQUEST['start']??0;
+$sort_order =   $_REQUEST['sort_order']??"_score:desc";
+$mode =         $_REQUEST['mode']??"or";
+
 $query_string_form = preg_replace('/"/', '&quot;', $query_string);
-$start_from = array_key_exists("start", $_REQUEST)?$_REQUEST['start']:0;
-$sort_order = array_key_exists("sort_order", $_REQUEST)?$_REQUEST['sort_order']:"_score:desc";
-$mode = array_key_exists("mode", $_REQUEST)?$_REQUEST['mode']:"or";
+
+# print "<pre>".print_r($_REQUEST,1)."</pre>";
+
 
 if (preg_match('/^(.*):(.*)$/', $sort_order, $m)) {
     $sort[$m[1]] = $m[2];
@@ -28,7 +32,6 @@ $and_semantic = ! $or_semantic?"CHECKED":"";
 
 $ini_array = parse_ini_file("php-demo.ini");
 $server = $ini_array['server'];
-$cert =  $ini_array['cert'];
 $results_per_page = $ini_array['results_per_page'];
 $es_index = $ini_array['index'];
 $user = $ini_array['user'];
@@ -60,18 +63,19 @@ $sort_variants = ["_score:desc" => "score (desc)",
     </form>
 
 <?php
-if (true or $query_string) {
+if ($query_string) {
     $client = ClientBuilder::create()
+                 ->setSSLVerification(false)
                  ->setHosts([$server])
                  ->setBasicAuthentication($user, $password)
-                 ->setCABundle($cert)
                  ->build();
 
     $params = [
+      "index" => $es_index,
       "body" => [
         "query" => [
            "simple_query_string" => [
-                "fields" => ["title" ], # , "overview","actors","director"],
+                "fields" => ["title", "overview","actors","director"],
                 "query" => $query_string,
                 "default_operator" => $mode
             ]
@@ -96,29 +100,6 @@ if (true or $query_string) {
         'size' => $results_per_page,
     ];
 
-    $params = [
-      "body" => [
-        "query" => [
-           "simple_query_string" => [
-                "fields" => ["title" ], # , "overview","actors","director"],
-                "query" => $query_string,
-                "default_operator" => "or"
-            ]
-        ],
-        "sort" => [$sort],
-        "highlight" => [
-          "fields" => [
-              "title" =>      ["number_of_fragments" => 3,
-		   	       "fragment_size" => 120 ],
-          ]
-        ]
-
-        ],
-        'from' => $start_from,
-        'explain' => true,
-        'size' => $results_per_page,
-    ];
-
     $response = $client->search($params);
 
     $query_encoded= urlencode(json_encode($params['body']['query']));
@@ -128,6 +109,7 @@ if (true or $query_string) {
     $i = $start_from + 1;
     $total_results = $response['hits']['total']['value'];
     printf("server     : %s<br>", $server);
+    printf("index     : %s<br>", $es_index);
     printf("# results  : %d<br>", $total_results);
     printf("high score : %.4f<br>", $response['hits']['max_score']);
     printf("time       : %d ms\n<p>", $response['took']);

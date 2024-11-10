@@ -14,13 +14,11 @@ $server = $ini_array['server'];
 $es_index = $ini_array['index'];
 $user = $ini_array['user'];
 $password = $ini_array['password']??getenv('ES_PW');
-$cert =  $ini_array['cert'];
-
 
 $client = ClientBuilder::create()
     ->setHosts([$server])
+    ->setSSLVerification(false)
     ->setBasicAuthentication($user, $password)
-    ->setCABundle($cert)
     ->build();
 
 // Info API
